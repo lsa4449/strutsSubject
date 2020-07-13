@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<package name="imageboardPKG" extends="struts-default,tiles-default" namespace="/user/imageBoard">
+	
+		<action name="imageBoardList" class="kr.or.ddit.imageboard.controller.ImageboardListAction">
+			<result type="tiles">user/imageBoard/imageBoardList</result>
+		</action>
+		<action name="imageBoardView" class="kr.or.ddit.imageboard.controller.ImageboardViewAction">
+			<result type="tiles">user/imageBoard/imageBoardView</result>
+		</action>
+		<action name="imageBoardForm">
+			<result type="tiles">user/imageBoard/imageBoardForm</result>
+		</action>
+		<!-- /user/imageBoard/insertImageInfo.do -->
+		<action name="insertImageInfo" class="kr.or.ddit.imageboard.controller.InsertimageAction">
+			<interceptor-ref name="fileUpload"></interceptor-ref>
+			<interceptor-ref name="modelDriven"></interceptor-ref>
+			<interceptor-ref name="params"></interceptor-ref>
+			<result type="redirectAction">
+				<param name="namespace">/user/imageBoard</param>
+				<param name="actionName">imageBoardList</param>
+			</result>
+		</action>
+		
+		<action name="deleteImageInfo" class="kr.or.ddit.imageboard.controller.DeleteimageAction">
+				<result type="redirectAction">
+					<param name="namespace">/user/imageBoard</param>
+					<param name="actionName">imageBoardList</param>
+				</result>
+		</action>
+	</package>
+	<!-- admin -->
+	<package name="adiminimageboardPKG" extends="struts-default,tiles-default" namespace="/admin/imageBoard">
+		<action name="imageBoardList" class="kr.or.ddit.imageboard.controllerAd.ImageboardListAction">
+			<result type="tiles">admin/imageBoard/imageBoardList</result>
+		</action>
+		<action name="imageBoardView" class="kr.or.ddit.imageboard.controllerAd.ImageboardViewAction">
+			<result type="tiles">admin/imageBoard/imageBoardView</result>
+		</action>
+	
+		<action name="deleteImageInfo" class="kr.or.ddit.imageboard.controllerAd.DeleteimageAction">
+				<result type="redirectAction">
+					<param name="namespace">/admin/imageBoard</param>
+					<param name="actionName">imageBoardList</param>
+				</result>
+		</action>
+	</package>
+</struts>

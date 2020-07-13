@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+	<!-- 유저 -->
+	<package name="referenceUserPKG" extends="struts-default, tiles-default" namespace="/user/referenceBoard">
+		<action name="referenceBoardList" class="kr.or.ddit.post.controller.ReferenceListAction">
+			<result type="tiles">user/referenceBoard/referenceBoardList</result>
+		</action>
+		
+		<action name="referenceBoardView" class="kr.or.ddit.post.controller.ReferenceViewAction">
+			<result type="tiles">user/referenceBoard/referenceBoardView</result>
+		</action>
+	
+		<action name="referenceBoardDelete" class="kr.or.ddit.post.controller.ReferenceDeleteAction">
+			<result type="chain">
+					<param name="namespace">/user/referenceBoard</param>
+					<param name="actionName">referenceBoardList</param>
+			</result>
+		</action>
+		
+		<action name="referenceBoardUpdate" class="kr.or.ddit.post.controller.ReferenceUpdateAction">
+			<interceptor-ref name="modelDriven"></interceptor-ref>
+			<interceptor-ref name="params"></interceptor-ref>
+			<result type="chain">
+					<param name="namespace">/user/referenceBoard</param>
+					<param name="actionName">referenceBoardList</param>
+			</result>
+		</action>
+		
+		<action name="referenceBoardInsert" class="kr.or.ddit.post.controller.ReferenceInsertAction">
+			<interceptor-ref name="fileUpload"></interceptor-ref>
+			<interceptor-ref name="modelDriven"></interceptor-ref>
+			<interceptor-ref name="params"></interceptor-ref>
+			<result type="redirect">
+				<![CDATA[/user/referenceBoard/referenceBoardList.do?fileName=${fileName}]]>
+			</result>
+		</action>
+
+		
+		<action name="referenceBoardForm">
+			<result type="tiles">user/referenceBoard/referenceBoardForm</result>
+		</action>
+		
+		<action name="referenceBoardReply">
+			<result type="tiles">user/referenceBoard/referenceBoardReplyForm</result>
+		</action>
+		
+		<action name="referenceBoardInsertReply" class="kr.or.ddit.post.controller.ReferenceInsertReplyAction">
+			<interceptor-ref name="modelDriven"></interceptor-ref>
+			<interceptor-ref name="params"></interceptor-ref>
+			<result type="chain">
+					<param name="namespace">/user/referenceBoard</param>
+					<param name="actionName">referenceBoardList</param>
+			</result>
+		</action>
+		
+		<action name="referenceBoardFileDownload" class="kr.or.ddit.post.controller.ReferenceInsertImageAction"
+			method="fileDownload"> 
+			<result type="stream">
+				<param name="contentType">binary/octet-stream</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">${contentDisposition}</param>
+				<param name="contentLength">${contentLength}</param>
+				<param name="bufferSize">4096</param>
+			</result>
+		</action>
+	</package>
+		
+	<!-- 관리자 -->
+		<package name="referenceAdminPKG" extends="struts-default, tiles-default" namespace="/admin/referenceBoard">
+			<action name="referenceBoardList" class="kr.or.ddit.post.controllerAd.ReferenceListAction">
+				<result type="tiles">admin/referenceBoard/referenceBoardList</result>
+			</action>
+		
+		<action name="referenceBoardView" class="kr.or.ddit.post.controllerAd.ReferenceViewAction">
+			<result type="tiles">admin/referenceBoard/referenceBoardView</result>
+		</action>
+		
+			<action name="referenceBoardUpdate" class="kr.or.ddit.post.controllerAd.ReferenceUpdateAction">
+			<interceptor-ref name="modelDriven"></interceptor-ref>
+			<interceptor-ref name="params"></interceptor-ref>
+			<result type="chain">
+					<param name="namespace">/admin/referenceBoard</param>
+					<param name="actionName">referenceBoardList</param>
+			</result>
+		</action>
+		
+		<action name="referenceBoardDelete" class="kr.or.ddit.post.controllerAd.ReferenceDeleteAction">
+			<result type="chain">
+					<param name="namespace">/admin/referenceBoard</param>
+					<param name="actionName">referenceBoardList</param>
+			</result>
+		</action>
+		
+		<action name="referenceBoardForm">
+			<result type="tiles">admin/referenceBoard/referenceBoardForm</result>
+		</action>
+		
+		<action name="referenceBoardReply">
+			<result type="tiles">admin/referenceBoard/referenceBoardReplyForm</result>
+		</action>
+		
+		<action name="referenceBoardInsertReply" class="kr.or.ddit.post.controllerAd.ReferenceInsertReplyAction">
+			<interceptor-ref name="modelDriven"></interceptor-ref>
+			<interceptor-ref name="params"></interceptor-ref>
+			<result type="chain">
+					<param name="namespace">/admin/referenceBoard</param>
+					<param name="actionName">referenceBoardList</param>
+			</result>
+		</action>
+		
+		<action name="referenceBoardFileDownload" class="kr.or.ddit.post.controllerAd.ReferenceInsertImageAction"
+			method="fileDownload"> 
+			<result type="stream">
+				<param name="contentType">binary/octet-stream</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">${contentDisposition}</param>
+				<param name="contentLength">${contentLength}</param>
+				<param name="bufferSize">4096</param>
+			</result>
+		</action>
+		
+		
+		
+		
+		</package>
+</struts>

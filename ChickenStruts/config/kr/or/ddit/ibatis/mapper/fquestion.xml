@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap   
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="fquestion">
+	<typeAlias alias="postVO" type="kr.or.ddit.vo.PostVO" />
+
+	<sql id="searchCondition">
+		<dynamic prepend="AND">
+			<isNotEmpty property="search_keyword" open="(" close=")">
+				<isEqual property="search_keycode" compareValue="TOTAL">
+					POST_TITLE LIKE '%' || #search_keyword# || '%'
+					OR POST_CONTENT LIKE '%' || #search_keyword# || '%'
+					OR MEM_NAME LIKE '%' || #search_keyword# ||'%'
+				</isEqual>
+				<isEqual property="search_keycode" compareValue="TITLE">
+					POST_TITLE LIKE '%' || #search_keyword# || '%'
+				</isEqual>
+				<isEqual property="search_keycode" compareValue="CONTENT">
+					POST_CONTENT LIKE '%' || #search_keyword# || '%'
+				</isEqual>
+				<isEqual property="search_keycode" compareValue="WRITER">
+					MEM_NAME LIKE '%' || #search_keyword# || '%'
+				</isEqual>
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<sql id="selectAll">
+		SELECT *
+		FROM POST
+		INNER JOIN MEMBER
+		ON POST.MEM_NO = MEMBER.MEM_NO 
+		AND POST.POST_STATUS = 'n' 
+		AND POST.BOARD_NO = 6
+	</sql>
+
+	<sql id="boardInfo">
+		select *
+		from post
+		inner join member
+		on post.mem_no = member.mem_no and post.post_no = #post_no#
+	</sql>
+
+	<select id="selectFQuestionBoard" parameterClass="map" resultClass="java.util.HashMap">
+		SELECT B.*
+		FROM(SELECT ROWNUM RNUM, A.*
+			FROM (<include refid="selectAll"/>
+				  <include refid="searchCondition"/> 
+			ORDER BY POST_GROUP,POSTS_SEQ DESC )A) B
+		<![CDATA[
+		WHERE B.RNUM <= #startCount#
+		  AND B.RNUM >= #endCount#
+		  ]]> 
+		ORDER BY B.RNUM DESC 
+	</select>
+
+	<select id="FQuestionBoardInfo" parameterClass="map"
+		resultClass="java.util.HashMap">
+		<include refid="boardInfo" />
+	</select>
+
+	<insert id="insertFQuestionboard" parameterClass="postVO">
+		<selectKey keyProperty="post_no" resultClass="String">
+			select
+			post_seq.nextval from dual
+		</selectKey>
+		INSERT INTO
+		POST(
+		POST_NO
+		,POST_TITLE
+		,POST_CONTENT
+		,POST_IP
+		,POST_GROUP
+		,MEM_NO
+		,BOARD_NO
+		,POST_PW
+		)
+		VALUES(
+		#post_no#
+		,#post_title#
+		,#post_content#
+		,#post_ip#
+		,#post_no#
+		,1
+		,6
+		,#post_pw#
+		)
+	</insert>
+
+	<update id="updateFQuestionBoard" parameterClass="postVO">
+		UPDATE POST
+		SET POST_TITLE=#post_title#
+		,POST_CONTENT=#post_content#
+		WHERE POST_NO=#post_no#
+	</update>
+
+	<update id="deleteFQuestionBoardInfo" parameterClass="map">
+		UPDATE POST
+		SET POST_STATUS='y'
+		WHERE POST_NO=#post_no#
+	</update>
+
+	<select id="totalCount" parameterClass="map" resultClass="String">
+		select COUNT(post_no)
+		from POST
+		inner join MEMBER on POST.MEM_NO = member.MEM_NO
+		and post.POST_STATUS='n'
+		and post.BOARD_NO = 6
+		<include refid="searchCondition" />
+	</select>
+
+	<select id="selectFQuestionImageName" parameterClass="map"
+		resultClass="java.util.HashMap">
+		select *
+		from FILES F
+		inner join POST P
+		on F.POST_NO = P.POST_NO
+		and F.POST_NO = #post_no#
+	</select>
+
+	<insert id="insertboard" parameterClass="postVO">
+		<selectKey keyProperty="post_no" resultClass="String">
+			select
+			post_seq.nextval from dual
+		</selectKey>
+		INSERT INTO
+		POST(
+		POST_NO
+		,POST_TITLE
+		,POST_CONTENT
+		,POST_IP
+		,POST_GROUP
+		,MEM_NO
+		,BOARD_NO
+		,POST_PW
+		)
+		VALUES(
+		#post_no#
+		,#post_title#
+		,#post_content#
+		,#post_ip#
+		,#post_no#
+		,1
+		,6
+		,#post_pw#
+		)
+	</insert>
+
+	<update id="udpateHit" parameterClass="map">
+		update POST
+		set post_hit= post_hit + 1
+		where post_no = #post_no#
+	</update>
+
+   	<insert id="insertPostReply" parameterClass="postVO">
+   		<selectKey keyProperty="post_no" resultClass="string">
+   			SELECT POST_SEQ.NEXTVAL FROM DUAL
+   		</selectKey>
+   		INSERT INTO POST(POST_NO
+					,POST_TITLE
+					,POST_CONTENT
+					,POST_IP
+					,POST_GROUP
+					,MEM_NO
+					,POST_PW
+					,BOARD_NO
+					,POSTS_SEQ
+					,POST_DEPTH)
+				VALUES(#post_no#
+					,#post_title#
+					,#post_content#
+					,#post_ip#
+					,#post_group#
+					,1
+					,#post_pw#
+					,6
+					,#posts_seq#
+					,#post_depth#)
+	</insert>   
+	
+	<update id="updateSeq" parameterClass="postVO">
+    		 UPDATE POST
+    		 SET POSTS_SEQ = POSTS_SEQ + 1
+    		 WHERE POST_GROUP = #post_group#
+    		 AND POSTS_SEQ > #posts_seq#
+    	</update>
+    	
+    	<select id="incrementSeq" parameterClass="postVO" resultClass="string">
+    		SELECT MAX(POSTS_SEQ) + 1
+			FROM POST
+			WHERE POST_GROUP = #post_group#
+    	</select>
+    	
+
+</sqlMap>
+
+
+
+
+
+
+
+
+
+

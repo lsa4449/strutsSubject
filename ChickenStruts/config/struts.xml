@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+<!--   <constant name="struts.enable.DynamicMethodInvocation" value="false" /> -->
+<!--   <constant name="struts.devMode" value="false" /> -->
+<!--   <constant name="struts.i18n.encoding" value="UTF-8" /> -->
+<!--   <constant name="struts.action.extension" value="do" /> -->
+	<!-- 
+		스트럿츠 설정파일
+		규칙 : 반드시 한개 이상의 패키지가 존재해야하고, 해당 패키지 내에는 반드시 한개의 액션이 선언되어있어야 함.
+		
+		
+		package : 모듈 단위.(자유게시판 모듈,QnA게시판 모듈 등등등)
+				  name - 다른 패키지와 구분을 위한 구분자(유일한 명명이 요구됨)
+				  extends - 스트럿츠 프레임웍이 제공하는 자원들을 상속.
+				  			다른 기타 패키지의 상속을 위해서도 활용됨.
+				  			상속 가능한 패키지 - abstact=true 선언
+				  			액션이 포함되지 않음
+				  		
+				  namespace - 클라이언트 요청시 URI에서 해당 패키지에 접근이
+				  			    가능한 URI 맵핑과 해당 패키지 내 선언된 액션의
+				  			    접근 맵핑
+				  			  
+				  action -  클라이언트 요청시 URI에서 해당 패키지에 접근으로 해당 패키지 내 선언된 액션 접근 맵핑
+				  			name - 클라이언트 요청시의 서블릿 맵핑 처리
+				  			class - 클라이언트 요청시 해당 요청을 처리하기 위한 비지니스 로직이 요구될 때 패키지명.클래스명 선언
+				  					* 단순한 정적인 응답 컨텐츠만을 클라이언트 제공시 생략 가능
+				  			method - default execute() 액션 메서드
+				  					   액션 메서드를 재정의 활용
+				  			result - view를 결정
+				  					  다른 액션 대상의 리다이렉트 및 포워딩 처리
+				  					 name - default success(생략 가능)
+				  					 type - dispatcher(생략 가능 : 포워딩 처리 선언)
+				  					 		redirectAction(액션에서 동일 또는 다른 패키지 내 액션으로 리다이렉트 처리)
+				  					 		chain(액션에서 동일 또는 다른 패키지 내 액션으로 포워딩 처리)
+				  
+	 -->
+	 <!-- http://localhost/StrutsToddler/hello/hello.do -->
+
+	 <!-- 여기에 경로 xml 추가 하세요 -->
+	 <include file="kr/or/ddit/struts/config/common.xml"></include>
+	 <include file="kr/or/ddit/struts/config/fquestion.xml"></include>
+	 <include file="kr/or/ddit/struts/config/member.xml"></include>
+	 <include file="kr/or/ddit/struts/config/imageboard.xml"></include>
+	 <include file="kr/or/ddit/struts/config/qna.xml"></include>
+	 <include file="kr/or/ddit/struts/config/join.xml"></include>
+	 <include file="kr/or/ddit/struts/config/freeboard.xml"></include>
+	 <include file="kr/or/ddit/struts/config/notice.xml"></include>
+	 <include file="kr/or/ddit/struts/config/referenceboard.xml"></include>
+</struts>

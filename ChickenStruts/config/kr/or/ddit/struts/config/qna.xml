@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<package name="adminQnAPKG" extends="struts-default,tiles-default" namespace="/admin/qnaBoard">
+			          
+		<action name="qnaBoardList" class="kr.or.ddit.qna.controller.QnaBoardListAction">
+			<result type="tiles">admin/qnaBoard/qnaBoardList</result>
+		</action>
+		<action name="qnaBoardView" class="kr.or.ddit.qna.controller.QnaBoardViewAction">
+			<result type="tiles">admin/qnaBoard/qnaBoardView</result>
+		</action>
+		<action name="qnaboardReplyInfoForm" class="kr.or.ddit.qna.controller.QnaBoardRelyFormAction">
+			<result type="tiles">admin/qnaBoard/qnaBoardReplyForm</result>
+		</action>
+		<action name="qnaboardReplyInsert" class="kr.or.ddit.qna.controller.QnaBoardInsertReplyFormAction">
+			<interceptor-ref name="fileUpload"></interceptor-ref> <!-- 파일 업로드를 하기위해서는  필수 --> <!-- 멀티파트 리퀘스트를 쓸수 잇게 해줌 -->
+			<interceptor-ref name="modelDriven"></interceptor-ref> <!-- valueStack에 값을 올려준다. -->
+			<interceptor-ref name="params"></interceptor-ref> <!-- 그 vo 내에 같은 이름이  있으면 세팅 해주는 역할을 한다. -->
+			<result type="redirect">
+				<![CDATA[/admin/qnaBoard/qnaBoardList.do?fileName=${fileName}]]>
+			</result>
+		</action>
+		<action name="qnaBoardReplyView" class="kr.or.ddit.qna.controller.QnaBoardReplyViewAction">
+			<result type="tiles">admin/qnaBoard/qnaBoardReplyView</result>
+		</action>
+		<action name="qnaBoardDelete" class="kr.or.ddit.qna.controller.QnaBoardDeleteAction">
+			<result type="redirectAction">
+				<param name="namespace">/admin/qnaBoard</param>
+				<param name="actionName">qnaBoardList</param>
+			</result>
+		</action>
+		<action name="qnaBoardUpdate" class="kr.or.ddit.qna.controller.QnaBoardUpdateAction">
+				<interceptor-ref name="modelDriven"></interceptor-ref> <!-- valueStack에 값을 올려준다. -->
+				<interceptor-ref name="params"></interceptor-ref> <!-- 그 vo 내에 같은 이름이  있으면 세팅 해주는 역할을 한다. -->
+			<result type="redirectAction">
+					<param name="namespace">/admin/qnaBoard</param>
+					<param name="actionName">qnaBoardList</param>
+			</result>
+		</action>
+		
+		
+		<action name="qnaboardFileDownload" class="kr.or.ddit.qna.controller.QnaBoardInsertReplyFormAction"
+			method="fileDownload"> <!-- 업로드와 같은 클래스와 연결하고 메소드명만 바꿔서 사용 -->
+			<result type="stream">
+				<param name="contentType">binary/octet-stream</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">${contentDisposition}</param>
+				<param name="contentLength">${contentLength}</param>
+				<param name="bufferSize">4096</param>
+			</result>
+		</action>
+
+		
+		
+	</package>
+	
+	<package name="userQnAPKG" extends="struts-default,tiles-default" namespace="/user/qnaBoard">
+			          
+		<action name="qnaboardList" class="kr.or.ddit.qna.controller.QnaBoardListAction">
+			<result type="tiles">user/qnaBoard/qnaboardList</result>
+		</action>
+		<action name="qnaboardView" class="kr.or.ddit.qna.controller.QnaBoardViewAction">
+			<result type="tiles">user/qnaBoard/qnaboardView</result>
+		</action>
+		<!-- 그냥 등록 폼 -->
+		<action name="qnaboardForm" class="kr.or.ddit.qna.controller.QnaBoardRelyFormAction">
+			<result type="tiles">user/qnaBoard/qnaboardForm</result>
+		</action>
+		<action name="insertqnaboardInfo" class="kr.or.ddit.qna.controller.QnaBoardInsertAction">
+			<interceptor-ref name="fileUpload"></interceptor-ref> <!-- 파일 업로드를 하기위해서는  필수 --> <!-- 멀티파트 리퀘스트를 쓸수 잇게 해줌 -->
+			<interceptor-ref name="modelDriven"></interceptor-ref> <!-- valueStack에 값을 올려준다. -->
+			<interceptor-ref name="params"></interceptor-ref> <!-- 그 vo 내에 같은 이름이  있으면 세팅 해주는 역할을 한다. -->
+			<result type="redirect">
+				<![CDATA[/user/qnaBoard/qnaboardList.do?fileName=${fileName}]]>
+			</result>
+		</action>
+		<action name="qnaBoardReplyView" class="kr.or.ddit.qna.controller.QnaBoardReplyViewAction">
+			<result type="tiles">user/qnaBoard/qnaboardReplyView</result>
+		</action>
+		<action name="qnaboardDelete" class="kr.or.ddit.qna.controller.QnaBoardDeleteAction">
+			<result type="redirectAction">
+				<param name="namespace">/user/qnaBoard</param>
+				<param name="actionName">qnaboardList</param>
+			</result>
+		</action>
+		<action name="qnaBoardUpadate" class="kr.or.ddit.qna.controller.QnaBoardUpdateAction">
+				<interceptor-ref name="modelDriven"></interceptor-ref> <!-- valueStack에 값을 올려준다. -->
+				<interceptor-ref name="params"></interceptor-ref> <!-- 그 vo 내에 같은 이름이  있으면 세팅 해주는 역할을 한다. -->
+			<result type="redirectAction">
+					<param name="namespace">/user/qnaBoard</param>
+					<param name="actionName">qnaboardList</param>
+			</result>
+		</action>
+		
+		
+		<action name="qnaboardFileDownload" class="kr.or.ddit.qna.controller.QnaBoardInsertReplyFormAction"
+			method="fileDownload"> <!-- 업로드와 같은 클래스와 연결하고 메소드명만 바꿔서 사용 -->
+			<result type="stream">
+				<param name="contentType">binary/octet-stream</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">${contentDisposition}</param>
+				<param name="contentLength">${contentLength}</param>
+				<param name="bufferSize">4096</param>
+
+			</result>
+
+		</action>
+
+		
+		
+	</package>
+</struts>

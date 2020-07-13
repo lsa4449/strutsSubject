@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+	<!-- 유저 -->
+	<package name="fquestionUserPKG" extends="struts-default, tiles-default" namespace="/user/fquestionBoard">
+		<action name="fquestionBoardList" class="kr.or.ddit.fquestion.controller.FquestionListAction">
+			<result type="tiles">user/fquestionBoard/fquestionBoardList</result>
+		</action>
+		
+		<action name="fquestionBoardView" class="kr.or.ddit.fquestion.controller.FquestionViewAction">
+			<result type="tiles">user/fquestionBoard/fquestionBoardView</result>
+		</action>
+	</package>
+	
+	
+	
+	
+	
+	<!-- 관리자 -->
+	<package name="fquestionAdminPKG" extends="struts-default, tiles-default" namespace="/admin/fquestionBoard">
+		<action name="fquestionBoardList" class="kr.or.ddit.fquestion.controllerAd.FquestionListAction">
+			<result type="tiles">admin/fquestionBoard/fquestionBoardList</result>
+		</action>
+
+		<action name="fquestionBoardView" class="kr.or.ddit.fquestion.controllerAd.FquestionViewAction">
+			<result type="tiles">admin/fquestionBoard/fquestionBoardView</result>
+		</action>
+		
+		<action name="fquestionBoardUpdate" class="kr.or.ddit.fquestion.controllerAd.FquestionUpdateAction">
+			<interceptor-ref name="modelDriven"></interceptor-ref>
+			<interceptor-ref name="params"></interceptor-ref>
+			<result type="chain">
+					<param name="namespace">/admin/fquestionBoard</param>
+					<param name="actionName">fquestionBoardList</param>
+			</result>
+		</action>
+		
+		<action name="fquestionBoardDelete" class="kr.or.ddit.fquestion.controllerAd.FquestionDeleteAction">
+			<result type="chain">
+					<param name="namespace">/admin/fquestionBoard</param>
+					<param name="actionName">fquestionBoardList</param>
+			</result>
+		</action>
+		
+			<action name="fquestionBoardInsert" class="kr.or.ddit.fquestion.controllerAd.FquestionInsertAction">
+			<interceptor-ref name="modelDriven"></interceptor-ref>
+			<interceptor-ref name="params"></interceptor-ref>
+			<result type="chain">
+					<param name="namespace">/admin/fquestionBoard</param>
+					<param name="actionName">fquestionBoardList</param>
+			</result>
+		</action>
+		
+		<action name="fquestionBoardForm">
+			<result type="tiles">admin/fquestionBoard/fquestionBoardForm</result>
+		</action>
+		
+		<action name="fquestionBoardReply">
+			<result type="tiles">admin/fquestionBoard/fquestionBoardReplyForm</result>
+		</action>
+		
+		<action name="fquestionBoardInsertReply" class="kr.or.ddit.fquestion.controllerAd.FquestionInsertReplyAction">
+			<interceptor-ref name="modelDriven"></interceptor-ref>
+			<interceptor-ref name="params"></interceptor-ref>
+			<result type="chain">
+					<param name="namespace">/admin/fquestionBoard</param>
+					<param name="actionName">fquestionBoardList</param>
+			</result>
+		</action>
+		
+		
+		
+		
+		
+	</package>
+</struts>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map  2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+    
+    <sqlMap namespace="files">
+    	<typeAlias alias="filesVO" type="kr.or.ddit.vo.FilesVO"/>
+    	
+    	<statement id="fileitemList" resultClass="filesVO">
+    		SELECT *
+    			FROM FILES
+    		 WHERE POST_NO = #post_no#
+    	</statement>
+    	
+    	<insert id="insertFileItem" parameterClass="filesVO">
+    		<selectKey keyProperty="file_no">
+    			SELECT FILE_SEQ.NEXTVAL FROM DUAL
+    		</selectKey>
+    	INSERT INTO FILES(
+						  	 FILE_NO       
+							,FILE_UPLOAD_NAME       
+							,FILE_SAVE_NAME         
+							,FILE_CONTENT_TYPE      
+							,FILE_SIZE              
+							,POST_NO   )
+                   VALUES(
+							#file_no#       
+							,#file_upload_name#       
+							,#file_save_name#         
+							,#file_content_type#      
+							,#file_size#              
+							,#post_no#)
+                        
+    	</insert>
+    	
+    	<select id="fileitemInfo" parameterClass="map" resultClass="filesVO">
+    		SELECT *
+    			FROM FILES
+    		   WHERE FILE_NO = #file_no#
+    	</select>
+    </sqlMap>

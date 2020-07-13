@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap   
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="notice">
+<typeAlias alias="postVO" type="kr.or.ddit.vo.PostVO"/>
+<typeAlias alias="fileVO" type="kr.or.ddit.vo.FilesVO"/>
+
+<sql id="searchCondition">
+		<dynamic prepend="AND">
+			<isNotEmpty property="search_keyword" open="(" close=")">
+				<isEqual property="search_keycode" compareValue="TOTAL">
+					POST_TITLE LIKE '%' || #search_keyword# || '%'
+					OR POST_CONTENT LIKE '%' || #search_keyword# || '%'
+					OR MEM_NAME LIKE '%' || #search_keyword# || '%'
+				</isEqual>
+				<isEqual property="search_keycode" compareValue="TITLE">
+					POST_TITLE LIKE '%' || #search_keyword# || '%'
+				</isEqual>
+				<isEqual property="search_keycode" compareValue="CONTENT">
+					POST_CONTENT LIKE '%' || #search_keyword# || '%'
+				</isEqual>
+				<isEqual property="search_keycode" compareValue="NICKNAME">
+					MEM_NAME LIKE '%' || #search_keyword# || '%'
+				</isEqual>
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+
+	
+
+	<sql id="selectAll">
+SELECT ROWNUM RNUM, A.*
+FROM
+	(SELECT *
+	FROM POST
+	    INNER JOIN MEMBER
+	    ON POST.MEM_NO = MEMBER.MEM_NO AND POST.POST_STATUS = 'n' AND POST.BOARD_NO = 2
+	    ORDER BY POST.POST_NO ASC) A
+<!-- ORDER BY RNUM DESC -->
+	</sql>
+	
+	<sql id="boardInfo">
+	select *
+    from post 
+        inner join member
+        on post.mem_no = member.mem_no and post.post_no = #post_no#
+	</sql>
+	
+	<select id="selectNoticeBoard" parameterClass="map" resultClass="java.util.HashMap">
+select *
+from
+     (
+SELECT ROWNUM RNUM, A.*
+FROM
+	(SELECT *
+	FROM POST
+	    INNER JOIN MEMBER
+	    ON POST.MEM_NO = MEMBER.MEM_NO AND POST.POST_STATUS = 'n' AND POST.BOARD_NO = 2
+	    <include refid="searchCondition"/>
+	    ORDER BY POST.POST_NO ASC) A)B
+		<![CDATA[
+		WHERE B.RNUM <= #startCount#						
+			AND B.RNUM >= #endCount#
+		]]>						
+		ORDER BY B.RNUM DESC
+	</select>
+	
+	<select id="noticeBoardInfo" parameterClass="map" resultClass="java.util.HashMap">
+		<include refid="boardInfo"/>
+	</select>
+	
+	<insert id="insertNoticeboard" parameterClass="postVO">
+		<selectKey keyProperty="post_no" resultClass="String">
+			select post_seq.nextval from dual
+		</selectKey>
+		INSERT INTO 
+			POST(
+				 POST_NO      
+				,POST_TITLE   
+				,POST_CONTENT 
+				,POST_IP      
+				,POST_GROUP   
+				,MEM_NO       
+				,BOARD_NO     
+				,POST_PW  
+			)
+			VALUES(
+				 #post_no#
+				,#post_title#
+				,#post_content#
+				,#post_ip# 
+				,#post_no#
+				,1     
+				,2    
+				,#post_pw#
+				)
+	</insert>
+	
+	<update id="updateNoticeBoard" parameterClass="postVO">
+		UPDATE POST 
+		SET POST_TITLE=#post_title#
+			,POST_CONTENT=#post_content# 
+		WHERE POST_NO = #post_no#
+	</update>
+	
+	<update id="deleteNoticeBoardInfo" parameterClass="map">
+		UPDATE POST 
+			SET POST_STATUS='y' 
+		  WHERE POST_NO=#post_no#
+	</update>
+	
+	<select id="totalCount" parameterClass="map" resultClass="String">
+select COUNT(post_no)
+from POST
+    inner join MEMBER on POST.MEM_NO = member.MEM_NO
+        and post.POST_STATUS='n'
+        and post.BOARD_NO = 2
+        <include refid="searchCondition"/>
+	</select>
+	
+	
+	
+	
+	<select id="selectfileInfo" parameterClass="map" resultClass="fileVO">
+		SELECT * FROM FILES
+		WHERE POST_NO = #post_no#
+	</select>
+	
+	<update id="udpateHit" parameterClass="map" >
+update POST
+    set post_hit= post_hit + 1
+    where post_no = #post_no#
+	</update>
+	
+
+
+</sqlMap>
+
+
+
+
+
+
+
+

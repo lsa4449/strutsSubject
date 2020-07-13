@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap    
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace = "qnapost">
+	<typeAlias alias="postVO" type="kr.or.ddit.vo.PostVO"/>
+	
+<resultMap id="qnaBoardResultMap" class="postVO" >
+<result property="post_date" column="post_date"/>
+<result property="post_hit" column="post_hit"/>
+<result property="post_pw" column="post_pw"/>
+<result property="post_no" column="post_no"/>
+<result property="post_title" column="post_title"/>
+<result property="post_content" column="post_content"/>
+<result property="post_ip" column="post_ip"/>
+<result property="post_status" column="post_status"/>
+<result property="post_group" column="post_group"/>
+<result property="posts_seq" column="posts_seq"/>
+<result property="post_depth" column="post_depth"/>
+<result property="mem_no" column="mem_no"/>
+<result property="board_no" column="board_no"/>
+<result property="mem_name" column="mem_name"/>
+<result property="mem_mail" column="mem_mail"/>
+<result property="items" column="post_no" select="files.fileitemList"/>
+</resultMap>
+	
+	<sql id ="selectAll">
+	 	SELECT *
+	 	FROM POST P INNER JOIN MEMBER M
+	 		ON P.MEM_NO = M.MEM_NO
+            AND BOARD_NO = 4
+	 		AND POST_STATUS = 'n'
+	</sql>
+	
+	<sql id="searchCondition">
+    		<dynamic prepend="AND">
+    			<isNotEmpty property="search_keyword" open="(" close=")">
+    				<isEqual property="search_keycode" compareValue="TOTAL">
+    					POST_TITLE LIKE '%'||#search_keyword#||'%'
+    					OR POST_CONTENT LIKE '%'||#search_keyword#||'%'
+    					OR MEM_NAME LIKE '%'||#search_keyword#||'%'
+    				</isEqual>
+    				<isEqual property="search_keycode" compareValue="TITLE">
+    					POST_TITLE LIKE '%'||#search_keyword#||'%'
+    				</isEqual>
+    				<isEqual property="search_keycode" compareValue="CONTENT">
+    					POST_CONTENT LIKE '%'||#search_keyword#||'%'
+    				</isEqual>
+    				<isEqual property="search_keycode" compareValue="WRITER">
+    					MEM_NAME LIKE '%'||#search_keyword#||'%'
+    				</isEqual>
+    			</isNotEmpty>
+    		</dynamic>
+    	</sql>
+	
+	<select id="qnabaordList" resultClass="java.util.HashMap" parameterClass="map" >
+			SELECT B.*
+			FROM (SELECT ROWNUM RNUM, A.*
+			FROM(<include refid="selectAll"/>
+				 <include refid="searchCondition"/>
+				 ORDER BY POST_GROUP,POSTS_SEQ DESC)A)B
+			<![CDATA[
+			WHERE B.RNUM <= #startCount#
+			AND B.RNUM >= #endCount#
+			]]>
+			ORDER BY B.RNUM DESC
+	</select>
+	
+		<select id="totalCount" parameterClass="map" resultClass="string">
+    		SELECT COUNT(POST_NO)
+    		  FROM POST P INNER JOIN MEMBER M
+	 			ON P.MEM_NO = M.MEM_NO
+    		 WHERE POST_STATUS = 'n'
+    		  AND BOARD_NO = 4
+    		  <include refid="searchCondition"/>
+    	</select>
+	
+	<insert id="insertQnaboard" parameterClass="postVO">
+	<selectKey keyProperty="post_no" resultClass="String">
+		SELECT POST_SEQ.NEXTVAL FROM DUAL
+	</selectKey>
+	INSERT INTO POST(POST_NO
+					,POST_TITLE
+					,POST_CONTENT
+					,POST_IP
+					,POST_GROUP
+					,MEM_NO
+					,POST_PW
+					,BOARD_NO)
+				VALUES(#post_no#
+					,#post_title#
+					,#post_content#
+					,#post_ip#
+					,#post_no#
+					,#mem_no#
+					,#post_pw#
+					,4)
+	</insert>
+	
+	<select id="qnaboardInfo" parameterClass="map" resultMap="qnaBoardResultMap">
+		SELECT *
+			FROM POST P INNER JOIN MEMBER M
+			ON(P.MEM_NO = M.MEM_NO)
+		WHERE POST_STATUS = 'n'
+	 	AND BOARD_NO = 4
+        AND POST_NO = #post_no#
+	</select>
+	
+	<update id="deleteQnaboard" parameterClass="map">
+		UPDATE POST
+			SET POST_STATUS = 'y'
+		WHERE POST_NO = #post_no#
+	</update>
+	
+	<update id="updateQnaboard" parameterClass="postVO">
+		UPDATE POST
+         SET POST_TITLE = #post_title#
+            ,POST_CONTENT = #post_content#
+            ,POST_IP = #post_ip#
+       WHERE POST_NO = #post_no#
+	</update>
+	
+	
+	<select id="incrementSeq" parameterClass="postVO" resultClass="string">
+		SELECT MAX(POSTS_SEQ) + 1
+			FROM POST
+			WHERE POST_GROUP = #post_group#
+	</select>
+	
+	<update id="updateSeq" parameterClass="postVO">
+		UPDATE POST
+			SET POSTS_SEQ = POSTS_SEQ + 1
+			WHERE POST_GROUP = #post_group#
+			AND POSTS_SEQ > #posts_seq#
+	</update>
+	
+	<insert id="insertQnaboardReply" parameterClass="postVO">
+		<selectKey keyProperty="post_no" resultClass="String">
+			SELECT POST_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+		
+		INSERT INTO POST(POST_NO
+						,POST_TITLE
+						,POST_CONTENT
+						,POST_IP
+						,POST_GROUP
+						,MEM_NO
+						,POST_PW
+						,BOARD_NO
+						,POSTS_SEQ
+						,POST_DEPTH)
+					VALUES(#post_no#
+						,#post_title#
+						,#post_content#
+						,#post_ip#
+						,#post_group#
+						,#mem_no#
+						,#post_pw#
+						,4
+						,#posts_seq#
+						,#post_depth#)
+	</insert>
+	
+	<update id="hitup" parameterClass="map" >
+		update POST
+    		set post_hit= post_hit + 1
+    			where post_no = #post_no#
+   </update>
+	
+	
+	
+</sqlMap>
+
+
+
+
+
+

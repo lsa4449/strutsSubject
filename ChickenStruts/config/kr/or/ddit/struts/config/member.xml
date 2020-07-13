@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<package name="memberPKG" extends="struts-default,tiles-default"
+		namespace="/user/member">
+		<action name="main">
+			<result>/WEB-INF/views/user/member/main.jsp</result>
+		</action>
+
+		<!-- <action name="memberView" class="kr.or.ddit.member.controller.MemberViewAction" 
+			method="memberView"> <result>/WEB-INF/views/user/member/memberView.jsp</result> 
+			</action> -->
+		<action name="deleteMemberInfo" class="kr.or.ddit.member.controller.DeleteMemberAction"
+			method="deleteMemberInfo">
+			<result type="redirectAction">
+				<param name="namespace">/user/join</param>
+				<param name="actionName">loginForm</param>
+			</result>
+		</action>
+		<action name="memberUpdate1" class="kr.or.ddit.member.controller.MemberUpdateForm">
+			<result>/WEB-INF/views/user/member/memberUpdate.jsp</result>
+
+		</action>
+		<action name="updateMemberInfo" class="kr.or.ddit.member.controller.UpdateMemberAction">
+			<interceptor-ref name="modelDriven"></interceptor-ref>
+			<interceptor-ref name="params"></interceptor-ref>
+			<result type="chain">
+				<param name="namespace">/user/fquestionBoard</param>
+				<param name="actionName">fquestionBoardList</param>
+			</result>
+		</action>
+		<action name="InsertMemberInfo" class="kr.or.ddit.member.controller.InsertMemberAction"
+			method="InsertMemberInfo">
+			<interceptor-ref name="modelDriven"></interceptor-ref>
+			<interceptor-ref name="params"></interceptor-ref>
+			<result type="redirectAction">
+				<param name="namespace">/user/join</param>
+				<param name="actionName">loginForm</param>
+			</result>
+		</action>
+		<action name="memberForm">
+			<result type="tiles">user/member/memberForm</result>
+
+		</action>
+		<action name="IDCheckAction" class="kr.or.ddit.member.controller.IDCheckAction"></action>
+	</package>
+	<!-- 관리자 -->
+	<package name="memberAdminPKG" extends="struts-default,tiles-default"
+		namespace="/admin/member">
+		<!-- <action name="memberForm1"> <result >/WEB-INF/views/admin/member/memberForm.jsp</result> 
+			</action> -->
+		<!-- 회원 리스트 -->
+		<action name="main1" class="kr.or.ddit.member.controllerAd.AdminMainAction">
+			<result type="tiles">admin/main/main</result>
+		</action>
+		<action name="memberForm" class="kr.or.ddit.member.controllerAd.MemberUpdateForm">
+			<result type="tiles">admin/member/memberUpdate</result>
+
+		</action>
+		<action name="deleteMemberInfo2"
+			class="kr.or.ddit.member.controllerAd.DeleteMemberAction" method="deleteMemberInfo">
+			<result type="redirectAction">
+				<param name="namespace">/admin/member</param>
+				<param name="actionName">main1</param>
+			</result>
+		</action>
+		<!-- <action name="memberUpdate2" class="kr.or.ddit.member.controllerAd.MemberUpdateForm"> 
+			<result type="tiles">admin/member/memberUpdate</result> </action> -->
+		<action name="updateMemberInfo2"
+			class="kr.or.ddit.member.controllerAd.UpdateMemberAction">
+			<interceptor-ref name="modelDriven"></interceptor-ref>
+			<interceptor-ref name="params"></interceptor-ref>
+			<result type="chain">
+				<param name="namespace">/admin/member</param>
+				<param name="actionName">main1</param>
+			</result>
+		</action>
+		<action name="exec" class="kr.or.ddit.member.controllerAd.MemberExcel">
+			<result type="tiles">admin/member/exec</result>
+			<result type="chain">
+				<param name="namespace">/admin/member</param>
+				<param name="actionName">main1</param>
+			</result>
+		</action>
+
+	</package>
+</struts>

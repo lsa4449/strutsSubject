@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="freeboard">
+   <typeAlias alias="postVO" type="kr.or.ddit.vo.PostVO" />
+
+
+	<resultMap  id="freeResultMap" class="postVO">
+		    <result property="post_date" column="post_date"/>
+<result property="post_hit" column="post_hit"/>
+<result property="post_pw" column="post_pw"/>
+<result property="post_no" column="post_no"/>
+<result property="post_title" column="post_title"/>
+<result property="post_content" column="post_content"/>
+<result property="post_ip" column="post_ip"/>
+<result property="post_status" column="post_status"/>
+<result property="post_group" column="post_group"/>
+<result property="posts_seq" column="posts_seq"/>
+<result property="post_depth" column="post_depth"/>
+<result property="mem_no" column="mem_no"/>
+<result property="board_no" column="board_no"/>
+<result property="mem_name" column="mem_name"/>
+<result property="mem_mail" column="mem_mail"/>
+<result property="items" column="post_no" select="files.fileitemList"/>  
+   </resultMap> 
+   
+	   <sql id="selectAll">
+     	SELECT *
+	 	FROM POST P INNER JOIN MEMBER M
+	 		ON P.MEM_NO = M.MEM_NO
+            AND BOARD_NO = 3
+	 		AND POST_STATUS = 'n'
+       
+   </sql>
+   <sql id="searchCondition">
+      <dynamic prepend="and">
+         <isNotEmpty property="search_keyword" open="(" close=")">
+            <isEqual property="search_keycode" compareValue="TOTAL">
+                post_title like '%'||#search_keyword#||'%'
+               or  post_content like '%'||#search_keyword#||'%'
+               or mem_name like '%'||#search_keyword#||'%'
+            </isEqual>
+            <isEqual property="search_keycode" compareValue="TITLE">
+                post_title like '%'||#search_keyword#||'%'
+            </isEqual>
+            <isEqual property="search_keycode" compareValue="CONTENT">
+               post_content like '%'||#search_keyword#||'%'
+            </isEqual>
+            <isEqual property="search_keycode" compareValue="WRITER">
+               mem_name like '%'||#search_keyword#||'%'
+            </isEqual>
+         </isNotEmpty>      
+      </dynamic>
+   
+   </sql> 
+      <select id="freeboardList" parameterClass="map" resultClass="java.util.HashMap">
+      
+      SELECT B.*
+			FROM (SELECT ROWNUM RNUM, A.*
+			FROM(<include refid="selectAll"/>
+				 <include refid="searchCondition"/>
+				 ORDER BY POST_GROUP,POSTS_SEQ DESC)A)B
+			<![CDATA[
+			WHERE B.RNUM <= #startCount#
+			AND B.RNUM >= #endCount#
+			]]>
+			ORDER BY B.RNUM DESC
+	</select>
+
+    
+ <select id="totalCount" parameterClass="map" resultClass="String">
+ 			SELECT COUNT(POST_NO)
+    		  FROM POST P INNER JOIN MEMBER M
+	 			ON P.MEM_NO = M.MEM_NO
+    		 WHERE POST_STATUS = 'n'
+    		  AND BOARD_NO = 3
+ <include refid="searchCondition"/>
+</select>	 
+   
+    
+       <update id="deleteFreeboard" parameterClass="map">
+      UPDATE POST
+         SET POST_STATUS ='y'
+       WHERE POST_NO = #post_no#
+   </update>   
+
+ <insert id="insertFreeboard" parameterClass="postVO">      
+         <selectKey keyProperty="post_no" resultClass="String">
+            SELECT POST_SEQ.NEXTVAL FROM DUAL
+         </selectKey>
+
+	INSERT INTO POST(POST_NO
+					,POST_TITLE
+					,POST_CONTENT
+					,POST_IP
+					,POST_GROUP
+					,MEM_NO
+					,POST_PW
+					,BOARD_NO)
+				VALUES(#post_no#
+					,#post_title#
+					,#post_content#
+					,#post_ip#
+					,#post_no#
+					,#mem_no#
+					,#post_pw#
+					,3)
+	</insert>
+
+      
+   	<select id="freeboardInfo" parameterClass="map" resultMap="freeResultMap">
+			SELECT *
+			FROM POST P INNER JOIN MEMBER M
+			ON(P.MEM_NO = M.MEM_NO)
+		WHERE POST_STATUS = 'n'
+	 	AND BOARD_NO = 3
+        AND POST_NO = #post_no#
+	</select>
+      
+           
+   <update id="updateFreeboard" parameterClass="postVO">
+      UPDATE POST
+         SET POST_TITLE = #post_title#
+            ,POST_CONTENT = #post_content#
+            ,POST_IP = #post_ip#
+            ,POST_PW = #post_pw#
+       WHERE POST_NO = #post_no#
+   </update> 
+   
+   <select id="incrementSeq" parameterClass="postVO" resultClass="string">
+		SELECT MAX(POSTS_SEQ) + 1
+			FROM POST
+			WHERE POST_GROUP = #post_group#
+	</select>
+   	<insert id="insertFreeboardReply" parameterClass="postVO">
+		<selectKey keyProperty="post_no" resultClass="string">
+			SELECT POST_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+		
+		INSERT INTO POST(POST_NO
+						,POST_TITLE
+						,POST_CONTENT
+						,POST_IP
+						,POST_GROUP
+						,MEM_NO
+						,POST_PW
+						,BOARD_NO
+						,POSTS_SEQ
+						,POST_DEPTH)
+					VALUES(#post_no#
+						,#post_title#
+						,#post_content#
+						,#post_ip#
+						,#post_group#
+						,#mem_no#
+						,#post_pw#
+						,3
+						,#posts_seq#
+						,#post_depth#)
+	</insert>
+	 <update id="udpateHit" parameterClass="map" >
+update POST
+    set post_hit= post_hit + 1
+    where post_no = #post_no#
+   </update>
+   
+</sqlMap>
+
+

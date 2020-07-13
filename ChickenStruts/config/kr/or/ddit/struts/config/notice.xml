@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+ <!-- 유저단 -->
+	<package name="noticeboardPKG" extends="struts-default,tiles-default" namespace="/user/noticeBoard">
+		<!-- 전체 조회 -->
+		<action name="noticeBoardList" class="kr.or.ddit.noticeboard.controller.NoticeBoardListAction">
+			<result type="tiles">user/noticeBoard/noticeBoardList</result>
+		</action>
+		<!-- 상세 조회 -->
+		<action name="noticeBoardView" class="kr.or.ddit.noticeboard.controller.NoticeBoardViewAction">
+			<result type="tiles">user/noticeBoard/noticeBoardView</result>
+		</action>
+		
+		<action name="noticeBoardFileDownload" class="kr.or.ddit.noticeboard.controller.NoticeBoardViewAction"
+		method="fileDownload">
+			<result type="stream">
+				<param name="contentType">binary/octet-stream</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">${contentDisposition}</param>
+				<param name="contentLength">${contentLength}</param>
+				<param name="bufferSize">4096</param>
+			</result>
+		</action>
+	</package>
+	
+	
+ <!-- 운영자단 -->
+ 	<package name="adminnoticeboardPKG" extends="struts-default,tiles-default" namespace="/admin/noticeBoard">
+ 	<!-- 전체 조회 -->
+ 		<action name="noticeBoardList" class="kr.or.ddit.noticeboard.controllerAd.AdminNoticeBoardListAction">
+ 			<result type="tiles">admin/noticeBoard/noticeBoardList</result>
+ 		</action>
+ 	<!-- 상세 조회 -->
+ 		<action name="noticeBoardView" class="kr.or.ddit.noticeboard.controllerAd.AdminNoticeBoardViewAction">
+ 			<result type="tiles">admin/noticeBoard/noticeBoardView</result>
+ 		</action>
+ 	<!-- 수정 -->
+ 		<action name="noitceBoardUpdate" class="kr.or.ddit.noticeboard.controllerAd.AdminNoticeBoardUpdateAction">
+ 			<interceptor-ref name="modelDriven"></interceptor-ref>
+			<interceptor-ref name="params"></interceptor-ref>
+			<result type="chain">
+				<param name="namespace">/admin/noticeBoard</param>
+				<param name="actionName">noticeBoardList</param>
+			</result>
+ 		</action>
+ 		
+ 		<!-- 삭제 -->
+ 		<action name="noticeBoardDelete" class="kr.or.ddit.noticeboard.controllerAd.AdminNoticeBoardDeleteAction">
+ 			<result type="redirectAction">
+ 				<param name="namespace">/admin/noticeBoard</param>
+ 				<param name="actionName">noticeBoardList</param>
+ 			</result>
+ 		</action>
+ 		
+ 		<!-- 인설트 화면으로 이동 -->
+ 		<action name="noticeBoardForm">
+			<result type="tiles">admin/noticeBoard/noticeBoardForm</result>
+		</action>
+		
+		<!-- insert -->
+	<action name="noticeBoardInsert"
+		class="kr.or.ddit.noticeboard.controllerAd.AdminNoticeBoardInsertAction">
+		<interceptor-ref name="fileUpload"></interceptor-ref>
+		<interceptor-ref name="modelDriven"></interceptor-ref>
+		<interceptor-ref name="params"></interceptor-ref>
+		<result type="redirect">
+				<![CDATA[/admin/noticeBoard/noticeBoardList.do?fileName=${fileName}]]>
+<!-- 			<param name="namespace">/admin/noticeBoard</param> -->
+<!-- 			<param name="actionName">noticeBoardList</param> -->
+		</result>
+	</action>
+	
+	<action name="noticeBoardFileDownload" class="kr.or.ddit.noticeboard.controllerAd.AdminNoticeBoardInsertAction"
+		method="fileDownload">
+			<result type="stream">
+				<param name="contentType">binary/octet-stream</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">${contentDisposition}</param>
+				<param name="contentLength">${contentLength}</param>
+				<param name="bufferSize">4096</param>
+			</result>
+		</action>
+		
+ 	</package>
+</struts>
+
+<!-- <action name="freeBoardForm"> -->
+<!-- 			<result type="tiles">user/freeBoard/freeBoardForm</result> -->
+<!-- 		</action> -->
+		
+	<!-- insert -->
+<!-- 		<action name="freeBoardInsert" class="kr.or.ddit.freeboard.controller.InsertFreeBoardAction"> -->
+<!-- 			<interceptor-ref name="modelDriven"></interceptor-ref> -->
+<!-- 			<interceptor-ref name="params"></interceptor-ref> -->
+<!-- 			<result type="redirectAction"> -->
+<!-- 				<param name="namespace">/user/freeBoard</param> -->
+<!-- 				<param name="actionName">freeBoardList</param> -->
+<!-- 			</result> -->
+<!-- 		</action> -->
